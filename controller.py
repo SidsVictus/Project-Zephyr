@@ -1,16 +1,16 @@
 import os
 import json
 import logging
-from openai import OpenAI
+from groq import Groq
 from dotenv import load_dotenv
 
 load_dotenv()
 
 logger = logging.getLogger(__name__)
-#----------------- FEATHERLESS------------
-FEATHERLESS_API_KEY = os.getenv("FEATHERLESS_API_KEY", "")
-FEATHERLESS_MODEL   = os.getenv("FEATHERLESS_MODEL", "deepseek-ai/DeepSeek-V3-0324")
 
+# ----------------GROQ API----------------
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_MODEL = "mixtral-8x7b-32768"  # Free model on Groq
 
 VALID_ACTIONS = {"ac_high", "ac_medium", "ac_low", "fan_only", "off"}
 
@@ -54,8 +54,8 @@ def _rule_engine(state: dict, target_temp: float) -> dict:
 
 
 def decide(state: dict, history: list, target_temp: float) -> dict:
-    if not FEATHERLESS_API_KEY:
-        logger.warning("FEATHERLESS_API_KEY not set - using rule engine fallback")
+    if not GROQ_API_KEY:
+        logger.warning("GROQ_API_KEY not set - using rule engine fallback")
         return _rule_engine(state, target_temp)
 
     hist_lines = []
@@ -79,24 +79,18 @@ Last 5 decisions:
 Decide the next cooling action."""
 
     try:
-        client = OpenAI(
-            api_key  = FEATHERLESS_API_KEY,
-            base_url = "https://api.featherless.ai/v1",
-        )
+        client = Groq(api_key=GROQ_API_KEY)
         response = client.chat.completions.create(
-            model       = FEATHERLESS_MODEL,
-            messages    = [
+            model=GROQ_MODEL,
+            messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user",   "content": user_msg},
+                {"role": "user", "content": user_msg},
             ],
-            max_tokens  = 200,
-            temperature = 0.3,
+            max_tokens=200,
+            temperature=0.3,
         )
 
         raw = (response.choices[0].message.content or "").strip()
-        reasoning = getattr(response.choices[0].message, "reasoning_content", "") or ""
-        if not raw and reasoning:
-            raw = reasoning.strip()
         if not raw:
             logger.warning("Empty response from model - falling back")
             return _rule_engine(state, target_temp)
@@ -116,14 +110,14 @@ Decide the next cooling action."""
             logger.warning(f"Model returned unknown action '{action}' - falling back")
             return _rule_engine(state, target_temp)
 
-        logger.info(f"DeepSeek R1: action={action}  reason={reason[:80]}")
+        logger.info(f"Groq Mixtral: action={action}  reason={reason[:80]}")
         return {"action": action, "reason": reason}
 
     except json.JSONDecodeError as e:
         logger.error(f"JSON parse error: {e} | raw={raw!r}")
         return _rule_engine(state, target_temp)
     except Exception as e:
-        logger.error(f"Featherless API error: {e}")
+        logger.error(f"Groq API error: {e}")
         return _rule_engine(state, target_temp)
 
 
