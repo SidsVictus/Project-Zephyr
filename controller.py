@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 # ----------------GROQ API----------------
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GROQ_MODEL = "mixtral-8x7b-32768"  # Free model on Groq
+GROQ_MODEL = "llama-3.1-8b-instant"  # Free model on Groq
 
 VALID_ACTIONS = {"ac_high", "ac_medium", "ac_low", "fan_only", "off"}
 
@@ -110,7 +110,7 @@ Decide the next cooling action."""
             logger.warning(f"Model returned unknown action '{action}' - falling back")
             return _rule_engine(state, target_temp)
 
-        logger.info(f"Groq Mixtral: action={action}  reason={reason[:80]}")
+        logger.info(f"Groq Llama 3.1 8B: action={action}  reason={reason[:80]}")
         return {"action": action, "reason": reason}
 
     except json.JSONDecodeError as e:
