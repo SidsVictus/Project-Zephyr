@@ -3,7 +3,7 @@
 An AI-powered intelligent environment controller for a server room.
 Zephyr runs a closed-loop agent that monitors indoor temperature, fetches real outdoor weather, and uses an LLM to decide the optimal cooling action every 10 seconds — all visualised on a dashboard.
 
-> **"Zephyr"** is Latin for *Gnetle breeze* — a nod to efficient cooling systems. 
+> **"Zephyr"** is Latin for *Gentle breeze* — a nod to efficient cooling systems. 
 ---
 
 ## Architecture
