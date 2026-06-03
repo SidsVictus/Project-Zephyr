@@ -6,6 +6,8 @@ Zephyr runs a closed-loop agent that monitors indoor temperature, fetches real o
 > **"Zephyr"** is Latin for *Gentle breeze* — a nod to efficient cooling systems. 
 ---
 
+![Flow](flow.png)
+
 ## Architecture
 
 
