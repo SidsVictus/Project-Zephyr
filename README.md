@@ -89,10 +89,10 @@ Zephyr/
 | Layer | Technology |
 |---|---|
 | Agent / backend | Python 3.10+ |
-| LLM controller | Grok API   |
+| LLM controller | Grok API |
 | Weather primary | BrightData Web Scraper API |
 | Weather fallback | OpenWeatherMap |
-| Real-time comms | WebSockets (`websockets`) |
+| Real-time comms | WebSockets |
 | Config | python-dotenv |
 
 ---
